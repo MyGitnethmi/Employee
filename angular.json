@@ -24,6 +24,9 @@
               "src/assets"
             ],
             "styles": [
+              "./node_modules/bootstrap/dist/css/bootstrap.css",
+              "./node_modules/bootstrap/dist/css/bootstrap-theme.css",
+              "./node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
               "src/styles.css"
             ],
             "scripts": []
@@ -119,6 +122,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "Employee"
+    }
+  },
+  "defaultProject": "Employee",
+  "cli": {
+    "analytics": "4ca3d2e2-f252-459a-b2ca-2bb4125a7d06"
+  }
 }

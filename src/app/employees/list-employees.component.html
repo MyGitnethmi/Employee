@@ -1,9 +1,12 @@
-<div>
-  <input type="text" class="form-control" placeholder="Search By Name" style="width: 300px" [(ngModel)]="searchTerm"/>
-</div>
-<br>
+<div class="container-md ml-5 pl-5">
 
-<div *ngFor="let employee of filteredEmployees ">
-  <app-display-employee [employee]="employee" [searchTerm]="searchTerm" (notifyDelete)="onDeleteNotification($event)"></app-display-employee>
-</div>
+  <div class="row">
+    <input type="text" class="form-control col-3" placeholder="Search By Name" [formControl]="searchKey" />
+  </div>
+  <br>
 
+  <div class="row" *ngFor="let employee of filteredEmployees ">
+    <app-display-employee [employee]="employee" [searchTerm]="searchKey.value" (notifyDelete)="onDeleteNotification($event)"></app-display-employee>
+  </div>
+
+</div>

@@ -3,6 +3,8 @@ import {Employee} from '../models/employee.model';
 import {EmployeeService} from './employee.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Observable} from 'rxjs';
+import {temporaryAllocator} from '@angular/compiler/src/render3/view/util';
+import {FormControl} from '@angular/forms';
 
 @Component({
   templateUrl: './list-employees.component.html',
@@ -10,43 +12,36 @@ import {Observable} from 'rxjs';
 })
 export class ListEmployeesComponent implements OnInit {
 
-  employees: Observable<Employee[]>;
+  allEmployees: Employee[];
   filteredEmployees: Employee[];
-  private _searchTerm: string;
+  public searchKey: FormControl = new FormControl();
 
   constructor(
-    private _employeeService: EmployeeService,
-    private _router: Router,
-    private _route: ActivatedRoute
+    private employeeService: EmployeeService,
+    private router: Router,
+    private route: ActivatedRoute
   ) {
   }
 
   ngOnInit(): void {
-    this.employees = this._employeeService.getEmployees();
-    if (this._route.snapshot.queryParamMap.has('searchTerm')) {
-      this.searchTerm = this._route.snapshot.queryParamMap.get('searchTerm');
+    if (this.route.snapshot.queryParamMap.has('searchTerm')) {
+      this.searchKey.setValue(this.route.snapshot.queryParamMap.get('searchTerm'));
     } else {
-      this.employees.subscribe(employees => {
-        this.filteredEmployees = employees as Employee[];
-      });
+      this.employeeService.getEmployees().subscribe(
+        response => {
+          console.log(response);
+          this.allEmployees = this.filteredEmployees = response as Employee[];
+        },
+        error => console.log(error)
+      );
     }
-  }
-
-  get searchTerm(): string {
-    return this._searchTerm;
-  }
-
-  set searchTerm(value) {
-    this._searchTerm = value;
-    this.filteredEmployees = this.filterEmployees(value);
-  }
-
-  filterEmployees(searchString: string): Employee[] | undefined {
-    let temp: Employee[];
-    this.employees.subscribe(employees => {
-      temp = employees.filter(employee => employee.name.toLowerCase().indexOf(searchString.toLowerCase()) !== -1);
+    this.searchKey.valueChanges.subscribe(value => {
+      this.filteredEmployees = value ? this.filterEmployees(value) : this.allEmployees;
     });
-    return temp ? temp : [];
+  }
+
+  filterEmployees(searchString: string): Employee[] {
+    return this.allEmployees.filter(employee => employee.name.toLowerCase().includes(searchString.toLowerCase()));
   }
 
   onDeleteNotification(id: number): void {
@@ -54,7 +49,6 @@ export class ListEmployeesComponent implements OnInit {
     if (i !== -1) {
       this.filteredEmployees.splice(i, 1);
     }
-
   }
 
 }
